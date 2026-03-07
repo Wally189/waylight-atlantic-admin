@@ -1,20 +1,32 @@
 (function () {
   var root = document.documentElement;
   var storageKey = "waylight-template-theme";
-  var themes = ["atlantic", "heather", "sand"];
+  var themes = ["red", "yellow", "pink", "green", "purple", "orange", "blue", "cream", "black"];
   var labels = {
-    atlantic: "Atlantic",
-    heather: "Heather",
-    sand: "Sand"
+    red: "Red",
+    yellow: "Yellow",
+    pink: "Pink",
+    green: "Green",
+    purple: "Purple",
+    orange: "Orange",
+    blue: "Blue",
+    cream: "Cream",
+    black: "Black"
+  };
+  var legacyThemes = {
+    atlantic: "blue",
+    heather: "green",
+    sand: "cream"
   };
 
+  function normalizeTheme(theme) {
+    var value = legacyThemes[theme] || theme;
+    return themes.indexOf(value) >= 0 ? value : "blue";
+  }
+
   function applyTheme(theme) {
-    var value = themes.indexOf(theme) >= 0 ? theme : "atlantic";
-    if (value === "atlantic") {
-      root.removeAttribute("data-theme");
-    } else {
-      root.setAttribute("data-theme", value);
-    }
+    var value = normalizeTheme(theme);
+    root.setAttribute("data-theme", value);
 
     try {
       window.localStorage.setItem(storageKey, value);
@@ -33,18 +45,18 @@
     return themes[(index + 1) % themes.length];
   }
 
-  var initialTheme = "atlantic";
+  var initialTheme = "blue";
   try {
     initialTheme = window.localStorage.getItem(storageKey) || initialTheme;
   } catch (error) {
-    initialTheme = "atlantic";
+    initialTheme = "blue";
   }
 
   applyTheme(initialTheme);
 
   document.querySelectorAll("[data-theme-toggle]").forEach(function (button) {
     button.addEventListener("click", function () {
-      var activeTheme = root.getAttribute("data-theme") || "atlantic";
+      var activeTheme = normalizeTheme(root.getAttribute("data-theme") || "blue");
       applyTheme(nextTheme(activeTheme));
     });
   });
